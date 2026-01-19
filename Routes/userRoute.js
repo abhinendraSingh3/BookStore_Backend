@@ -1,12 +1,12 @@
 const express = require('express');
-const router = express.Router();
+const userRoute = express.Router();
 const user = require('./../Models/users');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 const jwtAuthMiddleWare=require('./../jwtAuthMiddleWare');
 
 //---------------SINGNUP NEW USER--------------------------//
-router.post('/signup', async (req, res) => {
+userRoute.post('/signup', async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
 
@@ -51,7 +51,7 @@ router.post('/signup', async (req, res) => {
 
 //-------------------------USER LOGIN--------------------------------//
 
-post('/login', async (req, res) => {
+userRoute.post('/login', async (req, res) => {
     try {
         // required fields are there
         const { email, password } = req.data;// it is coming form auth middleware
@@ -110,7 +110,7 @@ post('/login', async (req, res) => {
 
 //------------------profile view----------------//
 
-router.get('/profile',jwtAuthMiddleWare,async(req,res)=>{
+userRoute.get('/profile',jwtAuthMiddleWare,async(req,res)=>{
 
     try{
 
@@ -132,7 +132,7 @@ router.get('/profile',jwtAuthMiddleWare,async(req,res)=>{
 
 //-------------------profile update--------------
 
-router.put('/profile',jwtAuthMiddleWare,async(req,res)=>{
+userRoute.put('/profile',jwtAuthMiddleWare,async(req,res)=>{
     try{
         //data extract
         const userId=req.data.userId;
@@ -158,6 +158,6 @@ router.put('/profile',jwtAuthMiddleWare,async(req,res)=>{
 
 
 
-module.exports=router;
+module.exports=UserRoute;
 
 
