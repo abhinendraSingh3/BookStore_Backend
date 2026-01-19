@@ -52,14 +52,36 @@ router.post('/signup', async (req, res) => {
 
 post('/login', async (req, res) => {
     try {
+        // required fields are there
+        const { email, password } = req.data;// it is coming form auth middleware
+
+        if (!email || !password) {
+            return res.status(401).json({ message: "Fill required fields" })
+        }
+
+        //user Exist check
+        const userCheck = await user.findById(req.data.userId) //req.data is coming from jwtAuthMiddleWare and jwt sends userId as userId not as _id
+        //or
+        //const userCheck= await user.findOne({_id:req.data.userId})
+        if (!userCheck) {
+            return res.status(401).json({ message: "user not found" })
+        }
+
+        //user email check 
+        const emailCheck = await user.findOne({ email: email }) //findone return null value or object
+        if (!emailCheck) {
+            return res.status(402).json({ message: "email is incorrect " })
+        }
 
 
+        //password check
+        //compare hashpassword with the existing password
+        const comparePass = bcrypt.compare(password, user.password);
+        if (!comparePass) {
+            return res.status(401).json({ message: "Password is incorrect" })
+        }
 
-
-
-
-
-
+        // generating jwt token
         //payload only expects object and userId is the id which db creates so that it can later be used to identify the user.
         const payload = {
             userId: user._id,
@@ -69,11 +91,12 @@ post('/login', async (req, res) => {
         const token = jwt.sign(payload, process.env.SECRET, {
             expiresIn: '1h'
         });
-
+      
         res.status(201).send({
             token,
             message: "login Successful"
         })
+          console.log("token send successfully")
 
     }
     catch (error) {
@@ -83,4 +106,5 @@ post('/login', async (req, res) => {
 
 
 })
+
 
