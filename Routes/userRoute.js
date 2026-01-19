@@ -3,6 +3,7 @@ const router = express.Router();
 const user = require('./../Models/users');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
+const jwtAuthMiddleWare=require('./../jwtAuthMiddleWare');
 
 //---------------SINGNUP NEW USER--------------------------//
 router.post('/signup', async (req, res) => {
@@ -106,5 +107,57 @@ post('/login', async (req, res) => {
 
 
 })
+
+//------------------profile view----------------//
+
+router.get('/profile',jwtAuthMiddleWare,async(req,res)=>{
+
+    try{
+
+        const bodyData=req.data.userId; 
+
+        const checkUser=await user.findById(bodyData)//.select(-password) it excludes the data from returning.
+
+        if(!checkUser){
+            return res.status(404).json({message:"user not found"})
+        }
+        return res.status(200).json({checkUser})
+
+    }
+    catch(err){
+        return res.status(500).json({message:"internal server erroor"})
+    }
+
+})
+
+//-------------------profile update--------------
+
+router.put('/profile',jwtAuthMiddleWare,async(req,res)=>{
+    try{
+        //data extract
+        const userId=req.data.userId;
+
+        // check user and updating Data 
+        const response=await user.findByIdAndUpdate(userId,req.body,{
+            new:true,
+            runValidators:true
+        })
+
+        if(!response){
+            return res.status(500).json({message:"User not valid"})
+        }
+
+        console.log("Data saved successfully")
+        return res.status(200).json(response);
+    }
+    catch(err){
+        return res.status(500).json({message:"Internal Server Error"});
+    }
+})
+
+
+
+
+module.exports=router;
 
 

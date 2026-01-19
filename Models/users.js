@@ -13,7 +13,8 @@ const userSch=new mongoose.Schema({
     },
     password:{
         type:String,
-        required:true
+        required:true,
+        select:false // passowrd is never returne whenever someone extracts Data
     },
     role:{
         type:String,
