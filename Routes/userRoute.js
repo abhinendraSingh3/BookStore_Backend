@@ -156,8 +156,6 @@ userRoute.put('/profile',jwtAuthMiddleWare,async(req,res)=>{
 })
 
 
-
-
 module.exports=UserRoute;
 
 
