@@ -1,9 +1,9 @@
 const express=require('express');
 const adminRoute=express.Router;
 const user=require('./../Models/users');
-const 
+const jwtAuthMiddleWare=require('./../jwtAuthMiddleWare')
 
-adminRoute.post('/login',async(req,res)=>{
+adminRoute.post('/login',jwtAuthMiddleWare,async(req,res)=>{
 
 
 
