@@ -54,14 +54,14 @@ userRoute.post('/signup', async (req, res) => {
 userRoute.post('/login', async (req, res) => {
     try {
         // required fields are there
-        const { email, password } = req.data;// it is coming form auth middleware
+        const { email, password } = req.body;// it is coming form auth middleware
 
         if (!email || !password) {
             return res.status(401).json({ message: "Fill required fields" })
         }
 
         //user Exist check
-        const userCheck = await user.findById(req.data.userId) //req.data is coming from jwtAuthMiddleWare and jwt sends userId as userId not as _id
+        const userCheck = await user.findOne({email}) //req.data is coming from jwtAuthMiddleWare and jwt sends userId as userId not as _id
         //or
         //const userCheck= await user.findOne({_id:req.data.userId})
         if (!userCheck) {
@@ -77,7 +77,7 @@ userRoute.post('/login', async (req, res) => {
 
         //password check
         //compare hashpassword with the existing password
-        const comparePass = bcrypt.compare(password, user.password);
+        const comparePass =await bcrypt.compare(password, userCheck.password);
         if (!comparePass) {
             return res.status(401).json({ message: "Password is incorrect" })
         }
@@ -85,8 +85,8 @@ userRoute.post('/login', async (req, res) => {
         // generating jwt token
         //payload only expects object and userId is the id which db creates so that it can later be used to identify the user.
         const payload = {
-            userId: user._id,
-            emailId: user.email
+            userId: userCheck._id,
+            emailId: userCheck.email
         }
         //creating token using .sign which accepts 2 parameters (payload and the secrete key)
         const token = jwt.sign(payload, process.env.SECRET, {
