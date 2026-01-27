@@ -22,7 +22,7 @@ bookRoute.get('/allbooks',async (req,res)=>{
 //--------------Book_Detail-------------------
 bookRoute.get('/books/:bookname',async (req,res)=>{
     try{
-        const bookName=req.params.bookname;
+        const bookName=req.params.bookname; 
 
         const bookDetails=await bookSch.findOne({Title:bookName});
         if(!bookDetails){
