@@ -5,7 +5,8 @@ const adminAuth = require('../adminAuth');
 const users = require('./../Models/users');
 const bcrypt = require('bcrypt');
 const adminAuth = require('./../adminAuth')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const books = require('../Models/books');
 require('dotenv').config()
 
 
@@ -65,21 +66,21 @@ adminRoute.get('/profile', jwtAuthMiddleWare, adminAuth, async (req, res) => {
     try {
 
         const bData = req.data.userId;
-        const veriUser = await users.findById( bData );
+        const veriUser = await users.findById(bData);
         if (!veriUser) {
             return res.status(501).json({ message: "user not found" })
         }
         return res.status(203).json({
             veriUser,
-            message:"view Profile successfull"
+            message: "view Profile successfull"
 
         })
     }
     catch (err) {
         console.log(err);
         return res.status(501).json({
-            error:err,
-            message:"Internal server error"
+            error: err,
+            message: "Internal server error"
         })
     }
 
@@ -88,10 +89,127 @@ adminRoute.get('/profile', jwtAuthMiddleWare, adminAuth, async (req, res) => {
 
 //-----------------logout-----------------//
 
-adminRoute.post('/logout',(req,res)=>{
+adminRoute.post('/logout', (req, res) => {
 
     return res.status(200).json({
-        message:"logged out Successfully"
+        message: "logged out Successfully"
     })
 
 })
+
+
+//-------Manage Books-----------//
+
+//---view all books//
+adminRoute.get('/books', jwtAuthMiddleWare, adminAuth, async (req, res) => {
+    try {
+
+        const bookData = await books.find();
+
+        if (bookData.lenght === 0) {
+            return res.status(404).json({ message: "No book found" });
+        }
+
+        return res.status(200).json({
+            bookData,
+            messsage: "Data fetched successfully"
+        }
+        )
+
+    }
+    catch (err) {
+        return res.status(501).json({ message: "internal server error" })
+    }
+
+})
+
+//-----------add book -----------
+adminRoute.post('/book', jwtAuthMiddleWare, adminAuth, async (req, res) => {
+    try {
+        // Admin sends book details → backend validates → saves to DB → returns success.
+        const { title, author, category, description, price, stock_quantity } = req.body;
+
+        if (!title || !author || !category || !description || !price || !stock_quantity) {
+            return res.status(404).json({ message: "Please fill all the fields" })
+        }
+
+        const verifyBook = await books.findOne({ Title: title, Author: author });
+        if (verifyBook) {
+            return res.status(409).json({ message: "book record already existed" })
+        }
+
+        const newData_res = await books.create({
+            title,
+            author,
+            category,
+            description,
+            price,
+            stock_quantity: stock_quantity ?? 0,
+        })
+
+        return res.status(201).json({
+
+            book: newData_res,
+            message: "Data saved succesfully"
+        })
+
+
+
+
+    }
+    catch (err) {
+        return res.status(501).json({ message: "internal server error at adminRoute.post" })
+    }
+})
+
+//-------view single book detail----------//
+adminAuth.get('/book/search/:bookname', jwtAuthMiddleWare, adminAuth, async (req, res) => {
+
+    try {
+        bookName = req.params.bookName;
+
+        const findBook = await books.findOne({ Title: bookName });
+
+        if (!findBook) {
+            return res.status(404).json({ message: "Book not found" })
+        }
+
+        return res.status(200).json({
+            book: findBook,
+            message: "Book Details Fetched successfully"
+
+        })
+    }
+    catch (err) {
+        return res.status(501).json({ message: "internal server error" })
+    }
+})
+
+//--update book detail---
+adminRoute.put('/book/update/:bookName', jwtAuthMiddleWare, adminAuth, async (req, res) => {
+    try {
+
+        const bookName = req.params.bookName;
+
+
+        const bookUpdate = await books.findOneAndUpdate({ Title: bookName }, { $set: req.body }, { //$ set operator will update only the fields whose value have been given
+            runValidators: true,
+            new: true
+        })
+
+        if (!bookUpdate) {
+            return res.status(404).json({ message: "Book not found" })
+        }
+
+        return res.status(201).json({
+            bookUpdate: bookUpdate,
+            message: "Data updated successfully"
+        })
+
+    }
+    catch(err){
+        return res.status(501).json({message:"Internal server error"})
+    }
+
+})
+

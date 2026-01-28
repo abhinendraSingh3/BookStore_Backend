@@ -9,8 +9,8 @@ const cartSchema = new mongoose.Schema({
 
     items: [{
         book: {
-            type: mongoose.Schema.types, objectId,
-            ref: 'book',
+            type: mongoose.Schema.Types.objectId,
+            ref: 'books',
             required: true
         },
         quantity: {

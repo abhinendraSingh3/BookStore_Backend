@@ -42,3 +42,4 @@ const bookSchema =new mongoose.Schema({
 },{timestamps:true} //This adds createdAt & updatedAt automatically
 
 )
+module.exports=mongoose.model('books',bookSchema)
