@@ -185,11 +185,11 @@ adminAuth.get('/book/search/:bookname', jwtAuthMiddleWare, adminAuth, async (req
     }
 })
 
-//--update book detail---
-adminRoute.put('/book/update/:bookName', jwtAuthMiddleWare, adminAuth, async (req, res) => {
+//-------update book detail----------//
+adminRoute.put('/book/update/:bookname', jwtAuthMiddleWare, adminAuth, async (req, res) => {
     try {
 
-        const bookName = req.params.bookName;
+        const bookName = req.params.bookname;
 
 
         const bookUpdate = await books.findOneAndUpdate({ Title: bookName }, { $set: req.body }, { //$ set operator will update only the fields whose value have been given
@@ -211,5 +211,24 @@ adminRoute.put('/book/update/:bookName', jwtAuthMiddleWare, adminAuth, async (re
         return res.status(501).json({message:"Internal server error"})
     }
 
+})
+
+adminRoute.delete('/book/:bookname',jwtAuthMiddleWare,adminAuth,async(req,res)=>{
+    try{
+
+        const bookName=req.params.bookname;
+
+        const bookFind=await books.findOneAndDelete({Title:bookName});
+
+        if(!bookFind){
+            return res.status(404).json({message:"Book not Found"})
+        }
+
+        return res.status(200).json({message:"book data deleted successfully"})
+
+    }
+    catch(err){
+        return res.status(500).json({message:"Internal server error"})
+    }
 })
 
