@@ -3,6 +3,8 @@ const app=express();
 const bodyParser = require('body-parser')
 const userRoute=require('./Routes/userRoute')
 const bookRoute=require('./Routes/bookRoute')
+const adminRoute=require('./Routes/adminRoute')
+const cartRoute=require('./Routes/cartRoute')
 
 app.use(bodyParser.json()) //used for reading data from the body;
 
@@ -12,14 +14,22 @@ app.get('/',(req,res)=>{
 });
 
 //--user_Route--
-app.get('/user',userRoute)
+app.use('/user',userRoute)
 
 //--book_Route--
-app.get('/book',bookRoute);
+app.use('/book',bookRoute);
+
+//--admin_Route
+app.use('/admin',adminRoute);
+
+//--cart_Route
+app.use('/cart',cartRoute);
 
 
 const PORT=process.env.PORT || 3000;
 app.listen(PORT,()=>{
 console.log(`the server is listening on Port http://localhost:${PORT}`)
 })
+
+
 

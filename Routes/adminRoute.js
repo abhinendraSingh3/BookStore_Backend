@@ -1,7 +1,6 @@
 const express = require('express');
-const adminRoute = express.Router;
+const adminRoute = express.Router();
 const jwtAuthMiddleWare = require('./../jwtAuthMiddleWare');
-const adminAuth = require('../adminAuth');
 const users = require('./../Models/users');
 const bcrypt = require('bcrypt');
 const adminAuth = require('./../adminAuth')
@@ -163,7 +162,7 @@ adminRoute.post('/book', jwtAuthMiddleWare, adminAuth, async (req, res) => {
 })
 
 //-------view single book detail----------//
-adminAuth.get('/book/search/:bookname', jwtAuthMiddleWare, adminAuth, async (req, res) => {
+adminRoute.get('/book/search/:bookname', jwtAuthMiddleWare, adminAuth, async (req, res) => {
 
     try {
         bookName = req.params.bookName;
@@ -231,4 +230,6 @@ adminRoute.delete('/book/:bookname',jwtAuthMiddleWare,adminAuth,async(req,res)=>
         return res.status(500).json({message:"Internal server error"})
     }
 })
+
+module.exports=adminRoute;
 
