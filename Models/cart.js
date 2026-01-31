@@ -2,9 +2,10 @@ const mongoose = require("mongoose");
 
 const cartSchema = new mongoose.Schema({
     user: {// saves the user that the particular cart belongs to the specific user only 
-        type: mongoose.Schema.types.objectId,
+        type: mongoose.Schema.Types.objectId,
         ref: 'user',
-        required: true
+        required: true,
+        unique:true
     },
 
     items: [
@@ -32,7 +33,11 @@ const cartSchema = new mongoose.Schema({
        
 
 
-}, { timestamp: true }
+}, { timestamps: true }
 );
+
+//indexing 
+//user:1 and item.book:1 is just for ascending
+cartSchema.index({user:1,'items.book':1})
 
 module.exports=mongoose.model('cart',cartSchema)

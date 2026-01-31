@@ -3,6 +3,7 @@ const jwtAuthMiddleWare = require('../jwtAuthMiddleWare');
 const cartRoute=express.Router();
 const cart=require('./../Models/cart')
 const loggger=require('winston');
+const books=require('./../Models/books')
 
 cartRoute.get('/cart',jwtAuthMiddleWare,async(req,res)=>{
 
@@ -55,9 +56,39 @@ cartRoute.post('/cart',jwtAuthMiddleWare,async(req,res)=>{
     try{
 
         //check if the item is already in cart
+            //first get the data from body
+            const {bookTitle}=req.body;
+
+            //check if the book exist in the records
+
+            const book=books.findOne({Title:bookTitle})
+
+            if(!book){
+                return res.status(404).json({
+                    message:"book not found",
+                })
+            }
+            
+            const bookId=book._id;
+
+            //for this we need to extract which user's cart we want to see. that we will get from jwt
+            const userId=req.data.userId;
+            const cartData=cart.findOne({user:userId}).
+            )
+
+            //if cart not then create cart
+            if(!cartData){
+                cartData.create({
+                    
+                })
+
+
+
+            }
+
         // if its already in cart then increase quantity
 
-        //if not then add item to cart
+        
 
     }
     catch(err){
