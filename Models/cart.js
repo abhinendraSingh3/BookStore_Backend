@@ -7,7 +7,8 @@ const cartSchema = new mongoose.Schema({
         required: true
     },
 
-    items: [{
+    items: [
+        {
         book: {
             type: mongoose.Schema.Types.objectId,
             ref: 'books',
@@ -23,7 +24,8 @@ const cartSchema = new mongoose.Schema({
             type:Number,
             required:true
         }
-    }]
+    }
+]
 
 
      
