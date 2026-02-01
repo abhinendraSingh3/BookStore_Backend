@@ -16,7 +16,7 @@ cartRoute.get('/cart', jwtAuthMiddleWare, async (req, res) => {
 
 
         //user cart details nikal ni pdengi 
-        const userCart = await cart.findOne({user:userId}).populate(items.book);
+        const userCart = await cart.findOne({ user: userId }).populate(items.book);
 
         if (!userCart) { //if there is no item in the cart then return null cart
             return res.status(200).json({
@@ -63,7 +63,7 @@ cartRoute.post('/cart', jwtAuthMiddleWare, async (req, res) => {
 
         //check if the book exist in the records
 
-        const book =await books.findOne({ Title: bookTitle })
+        const book = await books.findOne({ Title: bookTitle })
 
         if (!book) {
             return res.status(404).json({
@@ -76,7 +76,7 @@ cartRoute.post('/cart', jwtAuthMiddleWare, async (req, res) => {
         //for this we need to extract which user's cart we want to see. that we will get from jwt
         const userId = req.data.userId;
         const cartData = await cart.findOne({ user: userId })
-        
+
         //if cartdata not there then create cart
 
         if (!cartData) {
@@ -88,24 +88,24 @@ cartRoute.post('/cart', jwtAuthMiddleWare, async (req, res) => {
 
         // if its already in cart then increase quantity
         else {
-           const bookIndex= cartData.items.findIndex(item=>//.findIndex will return index (position) where the data is there and 1 if found .if not then -1
-                item.book.toString()===bookId.toString()
+            const bookIndex = cartData.items.findIndex(item =>//.findIndex will return index (position) where the data is there and 1 if found .if not then -1
+                item.book.toString() === bookId.toString()
             )
             //book is present
-            if(bookIndex!==-1){
-                cartData.items[bookIndex].quantity+=1;
+            if (bookIndex !== -1) {
+                cartData.items[bookIndex].quantity += 1;
             }
             //book not present
-            else{
-                cartData.items.push({book:bookId, quantity:1})
+            else {
+                cartData.items.push({ book: bookId, quantity: 1 })
             }
             await cartData.save();
 
         }
-         //Populate to return book details if needed
-        await cartData.populate('items.book','title price')
+        //Populate to return book details if needed
+        await cartData.populate('items.book', 'title price')
 
-        return res.status(201).json({message:'Book added to cart',cart:cartData})
+        return res.status(201).json({ message: 'Book added to cart', cart: cartData })
 
     }
     catch (err) {
@@ -120,55 +120,69 @@ cartRoute.post('/cart', jwtAuthMiddleWare, async (req, res) => {
 })
 
 //-----------update quantity of a book------------//
-cartRoute.put('/:bookName',jwtAuthMiddleWare,async(req,res)=>{
+cartRoute.put('/:bookName', jwtAuthMiddleWare, async (req, res) => {
 
-    try{
-        const bookName= req.params.bookName;
+    try {
+        const bookName = req.params.bookName;
+        const userId = req.data.userId
+        const { action, quantity } = req.body;
 
-        //check if the book is in the db
-        const checkBook=await books.findOne({Title:title});
-        if(!checkBook){
-            return res.status(404).json({message:"Book Not Found"})
+        //check if the book is in db
+        const dbBook = await books.findOne({ Title: bookName });
+        if (!dbBook) {
+            return res.status(404).json({ message: "Book not found" });
+        }
+        const bookId = dbBook._id;
+
+        const userCart = await cart.findOne({ user: userId });
+
+        if (!userCart) {// if there is no cart of user then create one
+            userCart = await cart.create({
+                user: userId,
+                items: []
+            })
         }
 
-        //check in user cart if book is there or not
-        const userId=req.data.userId;
-
-        bookId=checkBook._id;
-
-        const cartData=await cart.findOne({user:userId})
-
-        //if there is no cart then we will create cart
-        if(!cartData){
-            cartData=await cart.create({
-                user:userId,
-                items:[{book:bookId,quantity:1}]
-
-        })
+        const item = userCart.find(i => i.book.toString() == bookId.toString())// here i is iterating in every element of items
+        if (!item) {
+            return res.status(404).json({ message: "Book not found" });
         }
-        //if cart is present then increase quantity
-        else{
-            const cIndex=cartData.items.findIndex(item=>item.book.toString()===bookId.toString())
 
-            //index found then increase quantity
-            if(cIndex!==-1){
-                cartData.items[cIndex].quantity+=1;
+
+        //increase
+        if (action == "increase") {
+            item.quantity += quantity;
+        }
+        //decrease
+        if (action = "decrease") {
+            item.quantity -= quantity;
+            if (quantity <= 0) {
+                cart.items = cart.items.find(i => i.book.toString() !== bookId.toString())// if the book is not matching in cart then remove it
             }
-            else{//data not found then push data
-
-                cartData.items.push({book:bookId,quantity:1})
-
-            }   
-            await cartData.save;
+            else {
+                item.quantity = quantity;
+            }
+        }
+        //set quantity
+        //if quantity <=0 then remove it from cart
+        //else items.quantity =quantity
+        if (action = "set") {
+            if (quantity <= 0) {
+                cart.items = cart.items.find(i => i.book.toString() !== bookId.toString())// if the book is not matching in cart then remove it
+            }
+            else {
+                item.quantity = quantity;
+            }
         }
 
-        //populate for user res
-        const userR=await cartData.populate('items.book', 'price quantity')
+        await userCart.save();
+        res.json(userCart);
+
 
 
 
     }
-    catch(err){
+    catch (err) {
 
     }
 })
