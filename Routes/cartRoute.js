@@ -5,6 +5,8 @@ const cart = require('./../Models/cart')
 const loggger = require('winston');
 const books = require('./../Models/books')
 
+
+//-------viewCart-------//
 cartRoute.get('/cart', jwtAuthMiddleWare, async (req, res) => {
 
     try {
@@ -14,7 +16,7 @@ cartRoute.get('/cart', jwtAuthMiddleWare, async (req, res) => {
 
 
         //user cart details nikal ni pdengi 
-        const userCart = await cart.findOne(userId).populate(items.book);
+        const userCart = await cart.findOne({user:userId}).populate(items.book);
 
         if (!userCart) { //if there is no item in the cart then return null cart
             return res.status(200).json({
@@ -113,6 +115,60 @@ cartRoute.post('/cart', jwtAuthMiddleWare, async (req, res) => {
 
         })
 
+
+    }
+})
+
+//-----------update quantity of a book------------//
+cartRoute.put('/:bookName',jwtAuthMiddleWare,async(req,res)=>{
+
+    try{
+        const bookName= req.params.bookName;
+
+        //check if the book is in the db
+        const checkBook=await books.findOne({Title:title});
+        if(!checkBook){
+            return res.status(404).json({message:"Book Not Found"})
+        }
+
+        //check in user cart if book is there or not
+        const userId=req.data.userId;
+
+        bookId=checkBook._id;
+
+        const cartData=await cart.findOne({user:userId})
+
+        //if there is no cart then we will create cart
+        if(!cartData){
+            cartData=await cart.create({
+                user:userId,
+                items:[{book:bookId,quantity:1}]
+
+        })
+        }
+        //if cart is present then increase quantity
+        else{
+            const cIndex=cartData.items.findIndex(item=>item.book.toString()===bookId.toString())
+
+            //index found then increase quantity
+            if(cIndex!==-1){
+                cartData.items[cIndex].quantity+=1;
+            }
+            else{//data not found then push data
+
+                cartData.items.push({book:bookId,quantity:1})
+
+            }   
+            await cartData.save;
+        }
+
+        //populate for user res
+        const userR=await cartData.populate('items.book', 'price quantity')
+
+
+
+    }
+    catch(err){
 
     }
 })
