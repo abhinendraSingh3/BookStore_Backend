@@ -122,6 +122,16 @@ cartRoute.post('/cart', jwtAuthMiddleWare, async (req, res) => {
 //-----------update quantity of a book------------//
 cartRoute.put('/:bookName', jwtAuthMiddleWare, async (req, res) => {
 
+    //check if the book is in db
+    //user cart is present or not if not then create cart
+    //increase
+    //decrease
+    //set quantity
+    //if quantity is 0 then remove it
+    //if >0 then uopdate quantity
+
+
+
     try {
         const bookName = req.params.bookName;
         const userId = req.data.userId
@@ -185,6 +195,49 @@ cartRoute.put('/:bookName', jwtAuthMiddleWare, async (req, res) => {
     catch (err) {
 
     }
+})
+
+//--------------single book delete--------------//
+
+cartRoute.delete('/:bookName', jwtAuthMiddleWare, async (req, res) => {
+    try{
+    const bookName = req.params.bookName;
+    const userId = req.data.userId; //coming from jwt
+
+    //checking book exist in database
+    const book = await books.findOne({ Title: bookName })
+    if (!book) {
+        return res.status(404).json({ message: "book not found in dataBase" });
+    }
+    const bookId = book._id;
+
+    //finding user cart
+    let userCart = await cart.findOne({ user: userId })
+    if (!userCart) {
+        userCart = await cart.create({
+            user: userId,
+            items: [],
+            message: "user cart is empty"
+        })
+    }
+
+    const desiredBook = userCart.items.find(i => i.book.toString() === bookId.toString())
+    if (!desiredBook) {
+        return res.status(404).json({ message: "Book not in cart", items: [] });
+    }
+
+    userCart.items=userCart.items.filter(
+        i=>i.book.toString()!==bookId.toString()
+    );
+
+    await userCart.save();
+
+    res.json({message:"Book Saved", cart:userCart});
+}
+catch(err){
+    return res.status(500).json({message:"Internal Server Error"})
+
+}
 })
 
 
