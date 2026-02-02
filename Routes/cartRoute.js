@@ -4,6 +4,7 @@ const cartRoute = express.Router();
 const cart = require('./../Models/cart')
 const loggger = require('winston');
 const books = require('./../Models/books')
+const orders=require('./../Models/order');
 
 
 //-------viewCart-------//
@@ -199,7 +200,7 @@ cartRoute.put('/:bookName', jwtAuthMiddleWare, async (req, res) => {
 
 //--------------single book delete--------------//
 
-cartRoute.delete('/:bookName', jwtAuthMiddleWare, async (req, res) => {
+cartRoute.delete('/remove/:bookName', jwtAuthMiddleWare, async (req, res) => {
     try{
     const bookName = req.params.bookName;
     const userId = req.data.userId; //coming from jwt
@@ -238,6 +239,44 @@ catch(err){
     return res.status(500).json({message:"Internal Server Error"})
 
 }
+})
+
+
+cartRoute.post('/cart/checkout',jwtAuthMiddleWare,async(req,res)=>{
+ try{
+    const userId=req.data.userId;
+    const userCart=await cart.findOne({user:userId});
+
+    //if cart does'nt exist or it exist but has zero items then
+    if(!userCart|| userCart.items.length===0){
+        return res.status(404).json({message:"User cart is empty"})
+    }
+
+    let totalAmount=0;
+
+    //for loop to access each price and quantity
+    for(let item of userCart.items){
+        totalAmount+=item.price*item.quantity;
+    }
+
+    //create order cart once user clicks checkout 
+    const order=await orders.create({
+        user:userId,
+        items:userCart.items,
+        order_total:totalAmount
+    })
+
+    //after transferring orders then the cart is set to be emptied
+    userCart.items=[];
+    await userCart.save() //here save the changes.
+
+    return res.status(200).json({order,message:"Checkout Successful"})
+}
+catch(err){
+    return res.status(500).json({message:"Internal server error"})
+}
+
+
 })
 
 

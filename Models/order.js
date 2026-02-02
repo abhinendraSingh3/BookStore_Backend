@@ -18,7 +18,7 @@ user: {
     required:true
 },
 
-books:[{
+items:[{
     book:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"books",
