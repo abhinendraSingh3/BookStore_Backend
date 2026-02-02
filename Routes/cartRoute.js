@@ -243,6 +243,7 @@ catch(err){
 })
 
 
+//-----------checkout-------------//
 cartRoute.post('/cart/checkout',jwtAuthMiddleWare,async(req,res)=>{
  try{
     const userId=req.data.userId;
