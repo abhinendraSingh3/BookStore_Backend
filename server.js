@@ -6,6 +6,7 @@ const bookRoute=require('./Routes/bookRoute')
 const adminRoute=require('./Routes/adminRoute')
 const cartRoute=require('./Routes/cartRoute')
 
+
 app.use(bodyParser.json()) //used for reading data from the body;
 
 

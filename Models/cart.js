@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const cartSchema = new mongoose.Schema({
     user: {// saves the user that the particular cart belongs to the specific user only 
-        type: mongoose.Schema.Types.objectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
         required: true,
         unique:true
@@ -11,7 +11,7 @@ const cartSchema = new mongoose.Schema({
     items: [
         {
         book: {
-            type: mongoose.Schema.Types.objectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: 'books',
             required: true
         },
