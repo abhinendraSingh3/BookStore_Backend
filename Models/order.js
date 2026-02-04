@@ -40,10 +40,15 @@ order_total:{
     required:true
 },
 
-status:{
+order_status:{
     type:String,
     enum: ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
     default: "PENDING",
+},
+
+address:{
+    type:String,
+    required:true
 },
 
 payment_method:{
