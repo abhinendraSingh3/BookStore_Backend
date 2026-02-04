@@ -42,8 +42,8 @@ order_total:{
 
 order_status:{
     type:String,
-    enum: ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
-    default: "PENDING",
+    enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
+    default: "pending",
 },
 
 address:{
