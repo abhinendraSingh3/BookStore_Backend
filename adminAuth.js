@@ -13,6 +13,6 @@ const adminAuth = (role) => {
 
     }
 
-    }
+    
 
 module.exports = adminAuth;

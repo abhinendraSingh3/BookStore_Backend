@@ -86,7 +86,9 @@ userRoute.post('/login', async (req, res) => {
         //payload only expects object and userId is the id which db creates so that it can later be used to identify the user.
         const payload = {
             userId: userCheck._id,
-            emailId: userCheck.email
+            emailId: userCheck.email,
+            role:userCheck.role
+
         }
         //creating token using .sign which accepts 2 parameters (payload and the secrete key)
         const token = jwt.sign(payload, process.env.SECRET, {
