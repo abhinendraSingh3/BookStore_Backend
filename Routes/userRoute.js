@@ -1,4 +1,5 @@
 const express = require('express');
+const jwt=require('jsonwebtoken')
 const userRoute = express.Router();
 const user = require('./../Models/users');
 const bcrypt = require('bcrypt');
@@ -8,15 +9,16 @@ const jwtAuthMiddleWare=require('./../jwtAuthMiddleWare');
 //---------------SINGNUP NEW USER--------------------------//
 userRoute.post('/signup', async (req, res) => {
     try {
-        const { name, email, password, role } = req.body;
+        const { name, email, password,role} = req.body;
+        console.log(req.body)
 
         //if any required field is missing them=n
-        if (!name || !email || !password || !role) {
-            return res.status(501).json({ message: "Please fill all the required fields" })
+        if (!name || !email || !password) {
+            return res.status(501).json({ message: "Please Fill all the required fields" })
         }
 
         // check if the admin already exists in the system or not
-        const checkAdmin = await user.find({ role: admin }) //find return an array whereas findOne return null or an object
+        const checkAdmin = await user.find({ role: 'admin' }) //find return an array whereas findOne return null or an object
         if (checkAdmin.length > 0) {
             return res.status(409).json({ message: "Admin already registered" })
         }
@@ -40,12 +42,12 @@ userRoute.post('/signup', async (req, res) => {
 
         newUser.save()
         console.log("data saved in db")
-        return req.status(200).json({ message: "Data saved successfully" })
+        return res.status(200).json({ message: "Data saved successfully" })
 
     }
     catch (error) {
-        console.log("this is the error", err)
-        return req.status(500).json({ message: "Internal Server Error" })
+        console.log("this is the error", error)
+        return res.status(500).json({ message: "Internal Server Error" })
     }
 })
 
@@ -61,22 +63,15 @@ userRoute.post('/login', async (req, res) => {
         }
 
         //user Exist check
-        const userCheck = await user.findOne({email}) //req.data is coming from jwtAuthMiddleWare and jwt sends userId as userId not as _id
+        const userCheck = await user.findOne({email:email}).select('+password') //req.data is coming from jwtAuthMiddleWare and jwt sends userId as userId not as _id and have used .select because we need passwordd for bcrypt and we have done select false in schema thats why
         //or
         //const userCheck= await user.findOne({_id:req.data.userId})
         if (!userCheck) {
             return res.status(401).json({ message: "user not found" })
         }
-
-        //user email check 
-        const emailCheck = await user.findOne({ email: email }) //findone return null value or object
-        if (!emailCheck) {
-            return res.status(402).json({ message: "email is incorrect " })
-        }
-
-
         //password check
         //compare hashpassword with the existing password
+
         const comparePass =await bcrypt.compare(password, userCheck.password);
         if (!comparePass) {
             return res.status(401).json({ message: "Password is incorrect" })
@@ -103,8 +98,8 @@ userRoute.post('/login', async (req, res) => {
 
     }
     catch (error) {
-        console.log("this is the error", err)
-        return req.status(500).json({ message: "Internal Server Error" })
+        console.log("this is the error", error)
+        return res.status(500).json({ message: "Internal Server Error" })
     }
 
 

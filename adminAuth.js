@@ -12,6 +12,7 @@ const adminAuth = (role) => {
         next();
 
     }
+}
 
     
 
