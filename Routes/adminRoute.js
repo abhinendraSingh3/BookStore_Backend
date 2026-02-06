@@ -17,7 +17,8 @@ adminRoute.post('/login', async (req, res) => {
         const { email, password } = req.body;
 
         //checks in db
-        const checkUser = users.findOne({ email: email })
+        const checkUser = await users.findOne({ email: email }).select('+password')
+        
         if (!checkUser) {
             return res.status(401).json({ message: "User not valid" })
         }
@@ -61,18 +62,19 @@ adminRoute.post('/login', async (req, res) => {
 
 //--------------------profile--------------------//
 
-adminRoute.get('/profile', jwtAuthMiddleWare, adminAuth, async (req, res) => {
+adminRoute.get('/profile', jwtAuthMiddleWare, adminAuth('admin'), async (req, res) => {
     try {
 
         const bData = req.data.userId;
         const veriUser = await users.findById(bData);
+        
+        
         if (!veriUser) {
             return res.status(501).json({ message: "user not found" })
         }
         return res.status(203).json({
-            veriUser,
+           profile: veriUser,
             message: "view Profile successfull"
-
         })
     }
     catch (err) {

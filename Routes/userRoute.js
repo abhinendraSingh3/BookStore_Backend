@@ -133,6 +133,7 @@ userRoute.put('/profile',jwtAuthMiddleWare,async(req,res)=>{
     try{
         //data extract
         const userId=req.data.userId;
+        console.log("hello")       
 
         // check user and updating Data 
         const response=await user.findByIdAndUpdate(userId,req.body,{
