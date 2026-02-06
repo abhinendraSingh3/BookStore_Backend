@@ -37,7 +37,7 @@ adminRoute.post('/login', async (req, res) => {
         //--generate jwt tokens--
         //generate payload
         const payload = {
-            id: checkUser._id,
+            userId: checkUser._id,
             email: checkUser.email,
             role: checkUser.role
         }
