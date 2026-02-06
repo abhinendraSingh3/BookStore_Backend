@@ -102,7 +102,7 @@ adminRoute.post('/logout', (req, res) => {
 //-------Manage Books-----------//
 
 //---view all books//
-adminRoute.get('/books', jwtAuthMiddleWare, adminAuth, async (req, res) => {
+adminRoute.get('/books', jwtAuthMiddleWare, adminAuth('admin'), async (req, res) => {
     try {
 
         const bookData = await books.find();
@@ -125,7 +125,7 @@ adminRoute.get('/books', jwtAuthMiddleWare, adminAuth, async (req, res) => {
 })
 
 //-----------add book -----------
-adminRoute.post('/book', jwtAuthMiddleWare, adminAuth, async (req, res) => {
+adminRoute.post('/book', jwtAuthMiddleWare, adminAuth('admin'), async (req, res) => {
     try {
         // Admin sends book details → backend validates → saves to DB → returns success.
         const { title, author, category, description, price, stock_quantity } = req.body;
