@@ -2,33 +2,33 @@ const mongoose = require('mongoose')
 
 const bookSchema =new mongoose.Schema({
 
-    Title: {
+    title: {
         type: String,
         required: true,
         unique: true,
     },
-    Author: {
+    author: {
         type: String,
         required: true,
 
     },
-    Category: {
+    category: {
         type: String,
         required: true,
 
     },
-    Description: {
+    description: {
         type: String,
         required: true,
 
     },
-    Price: {
+    price: {
         type: Number,
         required: true,
 
 
     },
-    Stock_Quantity: {
+    stock_quantity: {
         type: Number,
         required: true,
 

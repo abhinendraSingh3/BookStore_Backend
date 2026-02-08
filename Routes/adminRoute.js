@@ -9,7 +9,6 @@ const books = require('../Models/books');
 require('dotenv').config()
 
 
-
 //----------------login--------------------//
 
 adminRoute.post('/login', async (req, res) => {
@@ -107,7 +106,7 @@ adminRoute.get('/books', jwtAuthMiddleWare, adminAuth('admin'), async (req, res)
 
         const bookData = await books.find();
 
-        if (bookData.lenght === 0) {
+        if (bookData.length === 0) {
             return res.status(404).json({ message: "No book found" });
         }
 
@@ -129,15 +128,18 @@ adminRoute.post('/book', jwtAuthMiddleWare, adminAuth('admin'), async (req, res)
     try {
         // Admin sends book details → backend validates → saves to DB → returns success.
         const { title, author, category, description, price, stock_quantity } = req.body;
+        console.log(req.body)
+        
 
-        if (!title || !author || !category || !description || !price || !stock_quantity) {
+        if (!title || !author || !category || !description || price==null || stock_quantity ==null) {
             return res.status(404).json({ message: "Please fill all the fields" })
         }
 
-        const verifyBook = await books.findOne({ Title: title, Author: author });
+        const verifyBook = await books.findOne({title,author });
         if (verifyBook) {
             return res.status(409).json({ message: "book record already existed" })
         }
+        
 
         const newData_res = await books.create({
             title,
@@ -145,8 +147,10 @@ adminRoute.post('/book', jwtAuthMiddleWare, adminAuth('admin'), async (req, res)
             category,
             description,
             price,
-            stock_quantity: stock_quantity ?? 0,
+            stock_quantity
         })
+        console.log(newData_res)
+        
 
         return res.status(201).json({
 
@@ -159,6 +163,7 @@ adminRoute.post('/book', jwtAuthMiddleWare, adminAuth('admin'), async (req, res)
 
     }
     catch (err) {
+        console.log("error",err)
         return res.status(501).json({ message: "internal server error at adminRoute.post" })
     }
 })
