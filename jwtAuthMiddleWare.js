@@ -11,7 +11,7 @@ const jwtAuthMiddleWare = (req, res, next) => {
     const authHeader = req.headers.authorization;
     if(!authHeader){
         return res.status(401).json({message:"token missing"})
-    }
+    }  
 
     //token =split authheader to extract token
     const token = authHeader.split(" ")[1];
