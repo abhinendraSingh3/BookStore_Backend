@@ -143,7 +143,7 @@ adminRoute.post('/book', jwtAuthMiddleWare, adminAuth('admin'), async (req, res)
 
         const newData_res = await books.create({
             title,
-            author,
+            author, 
             category,
             description,
             price,

@@ -90,7 +90,7 @@ userRoute.post('/login', async (req, res) => {
             expiresIn: '1h'
         });
       
-        res.status(201).send({
+        res.status(201).json({
             token,
             message: "login Successful"
         })
