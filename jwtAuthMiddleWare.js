@@ -3,7 +3,7 @@ require('dotenv').config();
 
 
 //jwt auth is for protected routes only like favourites, orders, cart etc
-
+    
 
 const jwtAuthMiddleWare = (req, res, next) => {
 
