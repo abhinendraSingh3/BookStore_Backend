@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const jwtAuthMiddleWare = (req, res, next) => {
 
-    //extract authheader
+    //extract authheader 
     const authHeader = req.headers.authorization;
     if(!authHeader){
         return res.status(401).json({message:"token missing"})
