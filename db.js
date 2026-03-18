@@ -17,8 +17,8 @@ const dbConnection=async()=>{
         process.exit(1);
     }
 
-}
-
+}          
+// mongoose.connection.on(event, callback)
 //events
 mongoose.connection.on('disconnected',()=>{
     console.log("Connection disconnected")
