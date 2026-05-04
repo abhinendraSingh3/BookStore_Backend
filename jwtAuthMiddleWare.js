@@ -31,6 +31,6 @@ const jwtAuthMiddleWare = (req, res, next) => {
     }
 
 }
-
+//implementation of token verification
 module.exports=jwtAuthMiddleWare;
 
