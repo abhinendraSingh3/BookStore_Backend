@@ -10,7 +10,7 @@ const adminAuth = (role) => {
             return res.status(403).json({message:"the user is not admin"});
         }
         next();
-
+  
     }
 }
 
