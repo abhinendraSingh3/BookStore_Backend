@@ -1,7 +1,4 @@
 # 📚 Book Store Backend API
-
-🚧 **Project Status: Ongoing Development**
-
 ---
 
 ## Overview
